@@ -4,11 +4,15 @@ import GUI from "lil-gui";
 import gsap from "gsap";
 
 const gui = new GUI({
+  // 面板宽度
   width: 300,
+  // 名称
   title: "调试器",
+  // 关闭全部文件夹
   closeFolders: true,
 });
 
+// 隐藏面板
 gui.hide();
 
 const callback = () => {
@@ -17,7 +21,7 @@ const callback = () => {
   }
 };
 callback();
-
+// 根据hash判断要不要展示面板
 window.addEventListener("onhashchange", () => {
   callback();
 });
@@ -26,7 +30,7 @@ const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
 };
-// 00 创建对象
+// 00 创建调试对象
 const debugObject: any = {
   materialColor: "#00ff00",
   spin: null,
@@ -72,12 +76,12 @@ meshGui
 meshGui.add(mesh, "visible").name("mesh.visible");
 materialGui.add(material, "wireframe").name("material.wireframe");
 
-// 03 添加color-picker(由于色彩管理，字节设置material的颜色会使得渲染结果颜色不一样，需要借助自定义对象去设置）
+// 03 添加color-picker(由于色彩管理，直接设置material的颜色会使得渲染结果颜色不一样，需要借助自定义对象去设置）
 materialGui
   .addColor(debugObject, "materialColor")
   .name("material.color")
   .onChange(() => {
-    // 字节修改颜色material会根据颜色做一次色彩空间的转换，所以存在色差
+    // 直接修改颜色material会根据颜色做一次色彩空间的转换，所以存在色差
     console.log(material.color.getHexString());
     // set 方法接受srgb的颜色参数，内部就处理这种转换
     material.color.set(debugObject.materialColor);
@@ -93,7 +97,9 @@ meshGui
   .add(debugObject, "segment", [1, 2, 3])
   .name("geometry.segments")
   .onFinishChange((c: number) => {
+    // 重新创建几何对象（不推荐的行为）
     mesh.geometry = new THREE.BoxGeometry(1, 1, 1, c, c, c);
+    // 销毁旧几何对象
     geometry.dispose();
   });
 
